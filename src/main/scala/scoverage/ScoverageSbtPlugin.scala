@@ -122,21 +122,23 @@ object ScoverageSbtPlugin extends AutoPlugin {
     val target = crossTarget.value
     Tests.Cleanup {
       () => if (coverageEnabled.value) {
-        loadCoverage(target, log) foreach { c =>
-          writeReports(
-            target,
-            (sourceDirectories in Compile).value,
-            c,
-            coverageOutputCobertura.value,
-            coverageOutputXML.value,
-            coverageOutputHTML.value,
-            coverageOutputDebug.value,
-            coverageOutputTeamCity.value,
-            log
-          )
-          checkCoverage(c, log, coverageMinimum.value, coverageFailOnMinimum.value)
+        ScoverageSbtPlugin.synchronized {
+          loadCoverage(target, log) foreach { c =>
+            writeReports(
+              target,
+              (sourceDirectories in Compile).value,
+              c,
+              coverageOutputCobertura.value,
+              coverageOutputXML.value,
+              coverageOutputHTML.value,
+              coverageOutputDebug.value,
+              coverageOutputTeamCity.value,
+              log
+            )
+            checkCoverage(c, log, coverageMinimum.value, coverageFailOnMinimum.value)
+          }
+          ()
         }
-        ()
       }
     }
   }
