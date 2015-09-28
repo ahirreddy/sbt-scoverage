@@ -1,17 +1,19 @@
 name := "sbt-scoverage"
 
-organization := "org.scoverage"
+organization := "com.databricks.scoverage"
 
 sbtPlugin := true
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8")
+
+scalaVersion := "2.10.5"
 
 resolvers ++= {
   if (isSnapshot.value) Seq(Resolver.mavenLocal, Resolver.sonatypeRepo("snapshots"))
   else Seq.empty
 }
 
-libraryDependencies += "org.scoverage" %% "scalac-scoverage-plugin" % "1.1.1"
+libraryDependencies += "com.databricks.scoverage" %% "scalac-scoverage-plugin" % "1.1.1"
 
 publishMavenStyle := true
 
