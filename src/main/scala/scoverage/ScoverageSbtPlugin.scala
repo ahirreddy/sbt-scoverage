@@ -32,7 +32,7 @@ object ScoverageSbtPlugin extends AutoPlugin {
     // testOptions in Test += postTestReport.value,
     // testOptions in IntegrationTest += postTestReport.value,
     coveragePostTestReport := coveragePostTestReportImpl.value,
-    coverageAggregate <<= coverageAggregate0.value,
+    coverageAggregate <<= coverageAggregate0,
     libraryDependencies ++= Seq(
       OrgScoverage % (ScalacRuntimeArtifact + "_" + scalaBinaryVersion.value) % ScoverageVersion % "provided" intransitive(),
       OrgScoverage % (ScalacPluginArtifact + "_" + scalaBinaryVersion.value) % ScoverageVersion % "provided" intransitive()

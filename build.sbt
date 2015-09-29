@@ -8,12 +8,9 @@ scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf
 
 scalaVersion := "2.10.5"
 
-resolvers ++= {
-  if (isSnapshot.value) Seq(Resolver.mavenLocal, Resolver.sonatypeRepo("snapshots"))
-  else Seq.empty
-}
+resolvers += "Databricks Repository on S3" at "s3://s3.amazonaws.com/databricks-mvn/release"
 
-libraryDependencies += "com.databricks.scoverage" %% "scalac-scoverage-plugin" % "1.1.1-1"
+libraryDependencies += "com.databricks" %% "scalac-scoverage-plugin" % "1.1.1-1"
 
 publishMavenStyle := true
 
