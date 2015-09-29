@@ -25,9 +25,14 @@ object ScoverageSbtPlugin extends AutoPlugin {
     commands += Command.command("coverage", "enable compiled code with instrumentation", "")(toggleCoverage(true)),
     commands += Command.command("coverageOff", "disable compiled code with instrumentation", "")(toggleCoverage(false)),
     coverageReport <<= coverageReport0,
-    testOptions in Test += postTestReport.value,
-    testOptions in IntegrationTest += postTestReport.value,
-    coverageAggregate <<= coverageAggregate0,
+    // Disable the postTestReport hook, because it unnecessarily triggers for all test suite
+    // completions. This is an issue when it has to acquire a lock, because it takes several seconds
+    // to complete. Instead we will depend on the user manually calling {{coveragePostTestReport}}
+    // to compile measurement results into reports.
+    // testOptions in Test += postTestReport.value,
+    // testOptions in IntegrationTest += postTestReport.value,
+    coveragePostTestReport := coveragePostTestReportImpl.value,
+    coverageAggregate <<= coverageAggregate0.value,
     libraryDependencies ++= Seq(
       OrgScoverage % (ScalacRuntimeArtifact + "_" + scalaBinaryVersion.value) % ScoverageVersion % "provided" intransitive(),
       OrgScoverage % (ScalacPluginArtifact + "_" + scalaBinaryVersion.value) % ScoverageVersion % "provided" intransitive()
@@ -114,6 +119,31 @@ object ScoverageSbtPlugin extends AutoPlugin {
           coverageExcludedPackages.value,
           coverageExcludedFiles.value,
           coverageHighlighting.value)
+    }
+  }
+
+  private lazy val coveragePostTestReportImpl = Def.task {
+    val log = streams.value.log
+    val target = crossTarget.value
+    if (coverageEnabled.value) {
+      ScoverageSbtPlugin.synchronized {
+        log.info(s"Aggregating measurements for ${name.value}")
+
+        loadCoverage(target, log) foreach { c =>
+          writeReports(
+            target,
+            (sourceDirectories in Compile).value,
+            c,
+            coverageOutputCobertura.value,
+            coverageOutputXML.value,
+            coverageOutputHTML.value,
+            coverageOutputDebug.value,
+            coverageOutputTeamCity.value,
+            log
+          )
+          checkCoverage(c, log, coverageMinimum.value, coverageFailOnMinimum.value)
+        }
+      }
     }
   }
 
