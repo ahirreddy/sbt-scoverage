@@ -13,7 +13,7 @@ resolvers ++= {
   else Seq.empty
 }
 
-libraryDependencies += "com.databricks.scoverage" %% "scalac-scoverage-plugin" % "1.1.1"
+libraryDependencies += "com.databricks.scoverage" %% "scalac-scoverage-plugin" % "1.1.1-1"
 
 publishMavenStyle := true
 
