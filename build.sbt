@@ -10,7 +10,7 @@ scalaVersion := "2.10.5"
 
 resolvers += "Databricks Repository on S3" at "s3://s3.amazonaws.com/databricks-mvn/release"
 
-libraryDependencies += "com.databricks.scoverage" %% "scalac-scoverage-plugin" % "1.1.1-2"
+libraryDependencies += "com.databricks.scoverage" %% "scalac-scoverage-plugin" % "1.1.1-3"
 
 publishMavenStyle := true
 
