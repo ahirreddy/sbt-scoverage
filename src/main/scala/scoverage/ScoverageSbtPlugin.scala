@@ -33,6 +33,10 @@ object ScoverageSbtPlugin extends AutoPlugin {
     // testOptions in IntegrationTest += postTestReport.value,
     coveragePostTestReport := coveragePostTestReportImpl.value,
     coverageAggregate <<= coverageAggregate0,
+    resolvers ++= Seq(
+      "Databricks Repository on S3" at "s3://s3.amazonaws.com/databricks-mvn/release",
+      "Databricks Snapshot Repository on S3" at "s3://s3.amazonaws.com/databricks-mvn/snapshot"
+    ),
     libraryDependencies ++= Seq(
       OrgScoverage % (ScalacRuntimeArtifact + "_" + scalaBinaryVersion.value) % ScoverageVersion % "provided" intransitive(),
       OrgScoverage % (ScalacPluginArtifact + "_" + scalaBinaryVersion.value) % ScoverageVersion % "provided" intransitive()
