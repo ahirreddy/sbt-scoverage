@@ -25,12 +25,6 @@ object ScoverageSbtPlugin extends AutoPlugin {
     commands += Command.command("coverage", "enable compiled code with instrumentation", "")(toggleCoverage(true)),
     commands += Command.command("coverageOff", "disable compiled code with instrumentation", "")(toggleCoverage(false)),
     coverageReport <<= coverageReport0,
-    // Disable the postTestReport hook, because it unnecessarily triggers for all test suite
-    // completions. This is an issue when it has to acquire a lock, because it takes several seconds
-    // to complete. Instead we will depend on the user manually calling {{coveragePostTestReport}}
-    // to compile measurement results into reports.
-    // testOptions in Test += postTestReport.value,
-    // testOptions in IntegrationTest += postTestReport.value,
     coveragePostTestReport := coveragePostTestReportImpl.value,
     coverageAggregate <<= coverageAggregate0,
     resolvers ++= Seq(
@@ -146,32 +140,6 @@ object ScoverageSbtPlugin extends AutoPlugin {
             log
           )
           checkCoverage(c, log, coverageMinimum.value, coverageFailOnMinimum.value)
-        }
-      }
-    }
-  }
-
-  private lazy val postTestReport = Def.task {
-    val log = streams.value.log
-    val target = crossTarget.value
-    Tests.Cleanup {
-      () => if (coverageEnabled.value) {
-        ScoverageSbtPlugin.synchronized {
-          loadCoverage(target, log) foreach { c =>
-            writeReports(
-              target,
-              (sourceDirectories in Compile).value,
-              c,
-              coverageOutputCobertura.value,
-              coverageOutputXML.value,
-              coverageOutputHTML.value,
-              coverageOutputDebug.value,
-              coverageOutputTeamCity.value,
-              log
-            )
-            checkCoverage(c, log, coverageMinimum.value, coverageFailOnMinimum.value)
-          }
-          ()
         }
       }
     }
